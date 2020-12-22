@@ -12,12 +12,27 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel("SynchronizeAllUsersV1Request")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SynchronizeAllUsersRequest extends SynchronizeOperationRequestBase {
+    /**
+     * @deprecated
+     * defining users for sync is not supported anymore
+     */
+    @Deprecated
     @ApiModelProperty(value = UserModelDescriptions.USERSYNC_MACHINEUSER_CRNS)
     private Set<String> machineUsers = new HashSet<>();
 
+    /**
+     * @deprecated
+     * defining users for sync is not supported anymore
+     */
+    @Deprecated
     @ApiModelProperty(value = UserModelDescriptions.USERSYNC_USER_CRNS)
     private Set<String> users = new HashSet<>();
 
+    /**
+     * @deprecated
+     * defining users for sync is not supported anymore
+     */
+    @Deprecated
     @ApiModelProperty(value = UserModelDescriptions.DELETED_WORKLOAD_USERS)
     private Set<String> deletedWorkloadUsers =  new HashSet<>();
 
@@ -32,18 +47,38 @@ public class SynchronizeAllUsersRequest extends SynchronizeOperationRequestBase 
         this.users = users;
     }
 
+    /**
+     * @deprecated
+     * defining users for sync is not supported anymore
+     */
+    @Deprecated
     public Set<String> getMachineUsers() {
         return machineUsers;
     }
 
+    /**
+     * @deprecated
+     * defining users for sync is not supported anymore
+     */
+    @Deprecated
     public void setMachineUsers(Set<String> machineUsers) {
         this.machineUsers = machineUsers;
     }
 
+    /**
+     * @deprecated
+     * defining users for sync is not supported anymore
+     */
+    @Deprecated
     public Set<String> getUsers() {
         return users;
     }
 
+    /**
+     * @deprecated
+     * defining users for sync is not supported anymore
+     */
+    @Deprecated
     public void setUsers(Set<String> users) {
         this.users = users;
     }
@@ -56,10 +91,20 @@ public class SynchronizeAllUsersRequest extends SynchronizeOperationRequestBase 
         this.accountId = accountId;
     }
 
+    /**
+     * @deprecated
+     * defining users for sync is not supported anymore
+     */
+    @Deprecated
     public Set<String> getDeletedWorkloadUsers() {
         return deletedWorkloadUsers;
     }
 
+    /**
+     * @deprecated
+     * defining users for sync is not supported anymore
+     */
+    @Deprecated
     public void setDeletedWorkloadUsers(Set<String> deletedWorkloadUsers) {
         this.deletedWorkloadUsers = deletedWorkloadUsers;
     }

@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,7 +22,6 @@ import org.springframework.security.access.AccessDeniedException;
 
 import com.sequenceiq.authorization.resource.AuthorizationResourceAction;
 import com.sequenceiq.cloudbreak.auth.ThreadBasedUserCrnProvider;
-import com.sequenceiq.cloudbreak.common.exception.BadRequestException;
 import com.sequenceiq.freeipa.api.v1.freeipa.user.model.SetPasswordRequest;
 import com.sequenceiq.freeipa.api.v1.freeipa.user.model.SyncOperationStatus;
 import com.sequenceiq.freeipa.api.v1.freeipa.user.model.SynchronizationStatus;
@@ -33,7 +31,6 @@ import com.sequenceiq.freeipa.controller.exception.SyncOperationAlreadyRunningEx
 import com.sequenceiq.freeipa.converter.freeipa.user.OperationToSyncOperationStatus;
 import com.sequenceiq.freeipa.entity.Operation;
 import com.sequenceiq.freeipa.service.freeipa.user.PasswordService;
-import com.sequenceiq.freeipa.service.freeipa.user.UserSyncRequestFilter;
 import com.sequenceiq.freeipa.service.freeipa.user.UserSyncService;
 import com.sequenceiq.freeipa.service.operation.OperationService;
 
@@ -66,7 +63,7 @@ public class UserV1ControllerTest {
     @Test
     void synchronizeUser() {
         Operation operation = mock(Operation.class);
-        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(any(), any(), any(), any(), any())).thenReturn(operation);
+        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(any(), any(), any(), any())).thenReturn(operation);
         SyncOperationStatus status = mock(SyncOperationStatus.class);
         when(operationToSyncOperationStatus.convert(operation)).thenReturn(status);
 
@@ -74,15 +71,14 @@ public class UserV1ControllerTest {
 
         assertEquals(status, ThreadBasedUserCrnProvider.doAs(USER_CRN, () -> underTest.synchronizeUser(request)));
 
-        UserSyncRequestFilter userSyncFilter = new UserSyncRequestFilter(Set.of(USER_CRN), Set.of(), Optional.empty());
         verify(userSyncService, times(1)).synchronizeUsersWithCustomPermissionCheck(ACCOUNT_ID, USER_CRN, Set.of(),
-                userSyncFilter, AuthorizationResourceAction.DESCRIBE_ENVIRONMENT);
+                AuthorizationResourceAction.DESCRIBE_ENVIRONMENT);
     }
 
     @Test
     void synchronizeUserMachineUser() {
         Operation operation = mock(Operation.class);
-        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(any(), any(), any(), any(), any())).thenReturn(operation);
+        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(any(), any(), any(), any())).thenReturn(operation);
         SyncOperationStatus status = mock(SyncOperationStatus.class);
         when(operationToSyncOperationStatus.convert(operation)).thenReturn(status);
 
@@ -90,16 +86,14 @@ public class UserV1ControllerTest {
 
         assertEquals(status, ThreadBasedUserCrnProvider.doAs(MACHINE_USER_CRN, () -> underTest.synchronizeUser(request)));
 
-        UserSyncRequestFilter userSyncFilter = new UserSyncRequestFilter(Set.of(), Set.of(MACHINE_USER_CRN), Optional.empty());
         verify(userSyncService, times(1)).synchronizeUsersWithCustomPermissionCheck(ACCOUNT_ID, MACHINE_USER_CRN,
-                Set.of(), userSyncFilter, AuthorizationResourceAction.DESCRIBE_ENVIRONMENT);
+                Set.of(), AuthorizationResourceAction.DESCRIBE_ENVIRONMENT);
     }
 
     @Test
     void synchronizeUserRejected() {
         Operation operation = mock(Operation.class);
-        UserSyncRequestFilter userSyncFilter = new UserSyncRequestFilter(Set.of(USER_CRN), Set.of(), Optional.empty());
-        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(ACCOUNT_ID, USER_CRN, Set.of(), userSyncFilter,
+        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(ACCOUNT_ID, USER_CRN, Set.of(),
                 AuthorizationResourceAction.DESCRIBE_ENVIRONMENT)).thenReturn(operation);
         SyncOperationStatus status = mock(SyncOperationStatus.class);
         when(status.getStatus()).thenReturn(SynchronizationStatus.REJECTED);
@@ -113,78 +107,52 @@ public class UserV1ControllerTest {
     @Test
     void synchronizeAllUsers() {
         Set<String> environments = Set.of(ENV_CRN);
-        Set<String> users = Set.of(USER_CRN);
-        Set<String> machineUsers = Set.of(MACHINE_USER_CRN);
         SynchronizeAllUsersRequest request = new SynchronizeAllUsersRequest();
         request.setEnvironments(environments);
-        request.setUsers(users);
-        request.setMachineUsers(machineUsers);
 
         Operation operation = mock(Operation.class);
-        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(any(), any(), any(), any(), any())).thenReturn(operation);
+        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(any(), any(), any(), any())).thenReturn(operation);
         SyncOperationStatus status = mock(SyncOperationStatus.class);
         when(operationToSyncOperationStatus.convert(operation)).thenReturn(status);
 
         assertEquals(status, ThreadBasedUserCrnProvider.doAs(USER_CRN, () -> underTest.synchronizeAllUsers(request)));
 
-        UserSyncRequestFilter userSyncFilter = new UserSyncRequestFilter(users, machineUsers, Optional.empty());
         verify(userSyncService, times(1)).synchronizeUsersWithCustomPermissionCheck(ACCOUNT_ID, USER_CRN, environments,
-                userSyncFilter, AuthorizationResourceAction.DESCRIBE_ENVIRONMENT);
+                AuthorizationResourceAction.DESCRIBE_ENVIRONMENT);
     }
 
     @Test
     void synchronizeAllUsersDeleteWorkloadUser() {
-        Set<String> users = Set.of(USER_CRN);
-        String deletedWorkloadUser = "workload-user";
         SynchronizeAllUsersRequest request = new SynchronizeAllUsersRequest();
         request.setEnvironments(Set.of());
-        request.setUsers(users);
-        request.setDeletedWorkloadUsers(Set.of(deletedWorkloadUser));
 
         Operation operation = mock(Operation.class);
-        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(any(), any(), any(), any(), any())).thenReturn(operation);
+        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(any(), any(), any(), any())).thenReturn(operation);
         SyncOperationStatus status = mock(SyncOperationStatus.class);
         when(operationToSyncOperationStatus.convert(operation)).thenReturn(status);
 
         assertEquals(status, ThreadBasedUserCrnProvider.doAs(USER_CRN, () -> underTest.synchronizeAllUsers(request)));
 
-        UserSyncRequestFilter userSyncFilter = new UserSyncRequestFilter(users, Set.of(), Optional.of(deletedWorkloadUser));
         verify(userSyncService, times(1)).synchronizeUsersWithCustomPermissionCheck(ACCOUNT_ID, USER_CRN, Set.of(),
-                userSyncFilter, AuthorizationResourceAction.DESCRIBE_ENVIRONMENT);
-    }
-
-    @Test
-    void synchronizeAllUsersMultipleDeleteWorkloadUsers() {
-        Set<String> users = Set.of(USER_CRN);
-        String deletedWorkloadUser = "workload-user";
-        SynchronizeAllUsersRequest request = new SynchronizeAllUsersRequest();
-        request.setEnvironments(Set.of());
-        request.setUsers(users);
-        request.setDeletedWorkloadUsers(Set.of("workload-user-01",  "workload-user-02"));
-        assertThrows(BadRequestException.class, () -> ThreadBasedUserCrnProvider.doAs(USER_CRN, () -> underTest.synchronizeAllUsers(request)));
+                AuthorizationResourceAction.DESCRIBE_ENVIRONMENT);
     }
 
     @Test
     void synchronizeAllUsersAsInternalActor() {
         Set<String> environments = Set.of(ENV_CRN);
-        Set<String> users = Set.of(USER_CRN);
-        Set<String> machineUsers = Set.of(MACHINE_USER_CRN);
         SynchronizeAllUsersRequest request = new SynchronizeAllUsersRequest();
         request.setEnvironments(environments);
-        request.setUsers(users);
-        request.setMachineUsers(machineUsers);
         request.setAccountId(ACCOUNT_ID);
 
         Operation operation = mock(Operation.class);
-        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(any(), any(), any(), any(), any())).thenReturn(operation);
+        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(any(), any(), any(), any())).thenReturn(operation);
         SyncOperationStatus status = mock(SyncOperationStatus.class);
         when(operationToSyncOperationStatus.convert(operation)).thenReturn(status);
 
         assertEquals(status, ThreadBasedUserCrnProvider.doAsInternalActor(() -> underTest.synchronizeAllUsers(request)));
 
-        UserSyncRequestFilter userSyncFilter = new UserSyncRequestFilter(users, machineUsers, Optional.empty());
         verify(userSyncService, times(1)).synchronizeUsersWithCustomPermissionCheck(ACCOUNT_ID, INTERNAL_ACTOR_CRN,
-                environments, userSyncFilter, AuthorizationResourceAction.DESCRIBE_ENVIRONMENT);
+                environments, AuthorizationResourceAction.DESCRIBE_ENVIRONMENT);
     }
 
     @Test
@@ -198,14 +166,11 @@ public class UserV1ControllerTest {
     @Test
     void synchronizeAllUsersRejected() {
         Set<String> environments = Set.of(ENV_CRN);
-        Set<String> users = Set.of(USER_CRN);
         SynchronizeAllUsersRequest request = new SynchronizeAllUsersRequest();
         request.setEnvironments(environments);
-        request.setUsers(users);
 
         Operation operation = mock(Operation.class);
-        UserSyncRequestFilter userSyncFilter = new UserSyncRequestFilter(users, Set.of(), Optional.empty());
-        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(ACCOUNT_ID, USER_CRN, environments, userSyncFilter,
+        when(userSyncService.synchronizeUsersWithCustomPermissionCheck(ACCOUNT_ID, USER_CRN, environments,
                 AuthorizationResourceAction.DESCRIBE_ENVIRONMENT)).thenReturn(operation);
         SyncOperationStatus status = mock(SyncOperationStatus.class);
         when(status.getStatus()).thenReturn(SynchronizationStatus.REJECTED);
