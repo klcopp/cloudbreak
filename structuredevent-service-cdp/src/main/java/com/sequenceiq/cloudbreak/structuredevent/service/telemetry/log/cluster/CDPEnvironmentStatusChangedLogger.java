@@ -1,4 +1,4 @@
-package com.sequenceiq.cloudbreak.structuredevent.service.telemetry.log.environment;
+package com.sequenceiq.cloudbreak.structuredevent.service.telemetry.log.cluster;
 
 import javax.inject.Inject;
 

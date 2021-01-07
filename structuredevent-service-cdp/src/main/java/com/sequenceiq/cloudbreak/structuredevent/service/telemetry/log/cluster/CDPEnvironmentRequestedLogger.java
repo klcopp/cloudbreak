@@ -1,4 +1,4 @@
-package com.sequenceiq.cloudbreak.structuredevent.service.telemetry.log.environment;
+package com.sequenceiq.cloudbreak.structuredevent.service.telemetry.log.cluster;
 
 import static com.cloudera.thunderhead.service.common.usage.UsageProto.CDPEnvironmentStatus.Value.CREATE_FAILED;
 import static com.cloudera.thunderhead.service.common.usage.UsageProto.CDPEnvironmentStatus.Value.CREATE_FINISHED;
