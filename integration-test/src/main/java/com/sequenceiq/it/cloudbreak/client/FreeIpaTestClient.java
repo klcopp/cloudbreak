@@ -11,6 +11,8 @@ import com.sequenceiq.it.cloudbreak.action.freeipa.FreeIpaCreateAction;
 import com.sequenceiq.it.cloudbreak.action.freeipa.FreeIpaDeleteAction;
 import com.sequenceiq.it.cloudbreak.action.freeipa.FreeIpaDescribeAction;
 import com.sequenceiq.it.cloudbreak.action.freeipa.FreeIpaDetachChildEnvironmentAction;
+import com.sequenceiq.it.cloudbreak.action.freeipa.FreeIpaGetLastSyncStatusAction;
+import com.sequenceiq.it.cloudbreak.action.freeipa.FreeIpaGetUserSyncStatusAction;
 import com.sequenceiq.it.cloudbreak.action.freeipa.FreeIpaRefreshAction;
 import com.sequenceiq.it.cloudbreak.action.freeipa.FreeIpaRepairAction;
 import com.sequenceiq.it.cloudbreak.action.freeipa.FreeIpaStartAction;
@@ -18,8 +20,8 @@ import com.sequenceiq.it.cloudbreak.action.freeipa.FreeIpaStopAction;
 import com.sequenceiq.it.cloudbreak.action.freeipa.FreeIpaSyncAction;
 import com.sequenceiq.it.cloudbreak.dto.freeipa.FreeIpaChildEnvironmentTestDto;
 import com.sequenceiq.it.cloudbreak.dto.freeipa.FreeIpaDiagnosticsTestDto;
-import com.sequenceiq.it.cloudbreak.dto.freeipa.FreeIpaUserSyncTestDto;
 import com.sequenceiq.it.cloudbreak.dto.freeipa.FreeIpaTestDto;
+import com.sequenceiq.it.cloudbreak.dto.freeipa.FreeIpaUserSyncTestDto;
 
 @Service
 public class FreeIpaTestClient {
@@ -58,6 +60,14 @@ public class FreeIpaTestClient {
 
     public Action<FreeIpaUserSyncTestDto, FreeIpaClient> sync() {
         return new FreeIpaSyncAction();
+    }
+
+    public Action<FreeIpaUserSyncTestDto, FreeIpaClient> describeLastSync() {
+        return new FreeIpaGetLastSyncStatusAction();
+    }
+
+    public Action<FreeIpaUserSyncTestDto, FreeIpaClient> describeUserSync() {
+        return new FreeIpaGetUserSyncStatusAction();
     }
 
     public Action<FreeIpaTestDto, FreeIpaClient> repair(InstanceMetadataType instanceMetadataType) {

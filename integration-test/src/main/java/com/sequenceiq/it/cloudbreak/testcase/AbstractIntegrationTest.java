@@ -1,7 +1,5 @@
 package com.sequenceiq.it.cloudbreak.testcase;
 
-import static com.sequenceiq.it.cloudbreak.context.RunningParameter.key;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -224,21 +222,7 @@ public abstract class AbstractIntegrationTest extends AbstractMinimalTest {
                 .validate();
     }
 
-    protected void createEnvironmentWithoutTelemetry(TestContext testContext) {
-        testContext
-                .given("telemetry", TelemetryTestDto.class)
-                .withLogging()
-                .withReportClusterLogs()
-                .given(EnvironmentTestDto.class)
-                .withNetwork()
-                .withCreateFreeIpa(Boolean.TRUE)
-                .when(environmentTestClient.create())
-                .await(EnvironmentStatus.AVAILABLE)
-                .when(environmentTestClient.describe())
-                .validate();
-    }
-
-    protected void createEnvironmentForSdx(TestContext testContext) {
+    protected void createEnvironmentWithNetwork(TestContext testContext) {
         testContext
                 .given("telemetry", TelemetryTestDto.class)
                 .withLogging()
@@ -246,19 +230,10 @@ public abstract class AbstractIntegrationTest extends AbstractMinimalTest {
                 .given(EnvironmentTestDto.class)
                 .withNetwork()
                 .withTelemetry("telemetry")
-                .withCreateFreeIpa(Boolean.TRUE)
-                .withS3Guard()
+                .withCreateFreeIpa(Boolean.FALSE)
                 .when(environmentTestClient.create())
                 .await(EnvironmentStatus.AVAILABLE)
                 .when(environmentTestClient.describe())
-                .validate();
-    }
-
-    protected void createImageCatalog(TestContext testContext, String name) {
-        testContext
-                .given(ImageCatalogTestDto.class)
-                .withName(name)
-                .when(imageCatalogTestClient.createV4(), key(name))
                 .validate();
     }
 

@@ -14,6 +14,8 @@ public class CloudbreakUser {
 
     private boolean admin;
 
+    private String desc;
+
     public CloudbreakUser() {
     }
 
@@ -33,6 +35,15 @@ public class CloudbreakUser {
         this.accessKey = accessKey;
         this.secretKey = secretKey;
         this.displayName = displayName;
+        this.admin = admin;
+    }
+
+    public CloudbreakUser(String accessKey, String secretKey, String displayName, String crn, String desc, boolean admin) {
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
+        this.displayName = displayName;
+        this.crn = crn;
+        this.desc = desc;
         this.admin = admin;
     }
 
@@ -74,6 +85,14 @@ public class CloudbreakUser {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public String getDescription() {
+        return desc;
+    }
+
+    public void setDescription(String desc) {
+        this.desc = desc;
     }
 
     public static void validateRealUmsUser(CloudbreakUser user) {

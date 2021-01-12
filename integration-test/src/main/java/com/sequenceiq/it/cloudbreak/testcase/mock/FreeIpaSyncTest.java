@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import org.testng.annotations.Test;
 
 import com.sequenceiq.freeipa.api.v1.freeipa.stack.model.common.Status;
-import com.sequenceiq.freeipa.api.v1.freeipa.user.model.UserSyncState;
 import com.sequenceiq.freeipa.api.v1.operation.model.OperationState;
 import com.sequenceiq.it.cloudbreak.actor.Actor;
 import com.sequenceiq.it.cloudbreak.client.FreeIpaTestClient;
@@ -40,7 +39,8 @@ public class FreeIpaSyncTest extends AbstractMockTest {
                 .when(freeIpaTestClient.create())
                 .await(Status.AVAILABLE)
                 .given(FreeIpaUserSyncTestDto.class)
-                .await(UserSyncState.SYNC_FAILED);
+                .when(freeIpaTestClient.describeUserSync())
+                .await(OperationState.COMPLETED);
         Actor internalActor = Actor.create(testContext.getActingUserCrn().getAccountId(), "__internal__actor__");
         testContext
                 .as(internalActor)

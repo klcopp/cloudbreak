@@ -2,6 +2,9 @@ package com.sequenceiq.it.cloudbreak.dto.ums;
 
 import static com.sequenceiq.it.cloudbreak.context.RunningParameter.emptyRunningParameter;
 
+import java.util.List;
+
+import com.cloudera.thunderhead.service.usermanagement.UserManagementProto;
 import com.sequenceiq.it.cloudbreak.Prototype;
 import com.sequenceiq.it.cloudbreak.UmsClient;
 import com.sequenceiq.it.cloudbreak.action.Action;
@@ -23,7 +26,11 @@ public class UmsTestDto extends AbstractTestDto<AssignResourceRequest, Object, U
 
     private static final String ENV_USER_CRN = "crn:altus:iam:us-west-1:altus:resourceRole:EnvironmentUser";
 
+    private static final String ENV_CREATE_CRN = "crn:altus:iam:us-west-1:altus:role:EnvironmentCreator";
+
     private static final String ENV_ADMIN_CRN = "crn:altus:iam:us-west-1:altus:resourceRole:EnvironmentAdmin";
+
+    private List<UserManagementProto.Group> allGroups;
 
     public UmsTestDto(TestContext testContext) {
         super(new AssignResourceRequest(), testContext);
@@ -44,6 +51,11 @@ public class UmsTestDto extends AbstractTestDto<AssignResourceRequest, Object, U
         return this;
     }
 
+    public UmsTestDto withEnvironmentCreator() {
+        getRequest().setRoleCrn(ENV_CREATE_CRN);
+        return this;
+    }
+
     public UmsTestDto withEnvironmentAdmin() {
         getRequest().setRoleCrn(ENV_ADMIN_CRN);
         return this;
@@ -57,6 +69,14 @@ public class UmsTestDto extends AbstractTestDto<AssignResourceRequest, Object, U
     public UmsTestDto withDatahubUser() {
         getRequest().setRoleCrn(DH_USER_CRN);
         return this;
+    }
+
+    public List<UserManagementProto.Group> getAllGroups() {
+        return allGroups;
+    }
+
+    public void setAllGroups(List<UserManagementProto.Group> allGroups) {
+        this.allGroups = allGroups;
     }
 
     public UmsTestDto assignTarget(String key) {

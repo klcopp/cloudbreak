@@ -24,8 +24,12 @@ public class UmsClient extends MicroserviceClient {
 
     private GrpcUmsClient umsClient;
 
-    protected UmsClient() {
-        super(UMS_CLIENT);
+    UmsClient(String newId) {
+        super(newId);
+    }
+
+    UmsClient() {
+        this(UMS_CLIENT);
     }
 
     @Override
@@ -52,6 +56,14 @@ public class UmsClient extends MicroserviceClient {
         return getTestContextSdxClient(UMS_CLIENT);
     }
 
+    public static Function<IntegrationTestContext, UmsClient> getTestContextUmsClient(String key) {
+        return testContext -> testContext.getContextParam(key, UmsClient.class);
+    }
+
+    public static Function<IntegrationTestContext, UmsClient> getTestContextUmsClient() {
+        return getTestContextUmsClient(UMS_CLIENT);
+    }
+
     public static synchronized UmsClient createProxyUmsClient(Tracer tracer) {
         UmsClient clientEntity = new UmsClient();
         UmsClientConfig clientConfig = new UmsClientConfig();
@@ -62,6 +74,10 @@ public class UmsClient extends MicroserviceClient {
 
     public GrpcUmsClient getUmsClient() {
         return umsClient;
+    }
+
+    public void setUmsClient(GrpcUmsClient grpcUmsClient) {
+        this.umsClient = grpcUmsClient;
     }
 
     @Override

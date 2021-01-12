@@ -299,6 +299,8 @@ public abstract class TestContext implements ApplicationContextAware {
     public TestContext as(Actor actor) {
         checkShutdown();
         CloudbreakUser acting = actor.acting(testParameter);
+        LOGGER.info("Acting user display name: [{}] | access key: [{}] | secret key: [{}] | crn: [{}] | admin: [{}]", acting.getDisplayName(),
+                acting.getAccessKey(), acting.getSecretKey(), acting.getCrn(), acting.getAdmin());
         Log.as(LOGGER, acting.toString());
         setActingUser(acting);
         if (clients.get(acting.getAccessKey()) == null) {
