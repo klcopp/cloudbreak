@@ -1,6 +1,5 @@
 package com.sequenceiq.cloudbreak.cloud.aws.encryption;
 
-import static com.sequenceiq.cloudbreak.cloud.aws.encryption.EncryptedImageCopyService.SNAPSHOT_NOT_FOUND_MSG_CODE;
 import static com.sequenceiq.cloudbreak.cloud.aws.encryption.EncryptedSnapshotService.VOLUME_NOT_FOUND_MSG_CODE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -23,8 +22,19 @@ import com.sequenceiq.cloudbreak.cloud.context.AuthenticatedContext;
 import com.sequenceiq.cloudbreak.cloud.exception.CloudConnectorException;
 import com.sequenceiq.cloudbreak.cloud.model.CloudResource;
 import com.sequenceiq.common.api.type.ResourceType;
+import com.sequenceiq.cloudbreak.cloud.model.Location;
+import com.sequenceiq.cloudbreak.cloud.model.Region;
+import com.sequenceiq.cloudbreak.cloud.model.AvailabilityZone;
+import com.sequenceiq.cloudbreak.cloud.model.CloudCredential;
+import com.sequenceiq.cloudbreak.cloud.context.CloudContext;
 
 public class EncryptedSnapshotServiceTest {
+
+    private static final String USER_ID = "horton@hortonworks.com";
+
+    private static final Long WORKSPACE_ID = 1L;
+
+    private static final String SNAPSHOT_NOT_FOUND_MSG_CODE = "InvalidSnapshot.NotFound";
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
@@ -37,10 +47,18 @@ public class EncryptedSnapshotServiceTest {
     @InjectMocks
     private EncryptedSnapshotService underTest;
 
+    public AuthenticatedContext authenticatedContext() {
+        Location location = Location.location(Region.region("region"), AvailabilityZone.availabilityZone("az"));
+        CloudContext cloudContext = new CloudContext(5L, "name", "crn", "platform", "variant",
+                location, USER_ID, WORKSPACE_ID);
+        CloudCredential credential = new CloudCredential("crn", null);
+        return new AuthenticatedContext(cloudContext, credential);
+    }
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        authenticatedContext = EncryptedImageCopyServiceTest.authenticatedContext();
+        authenticatedContext = authenticatedContext();
     }
 
     @Test
