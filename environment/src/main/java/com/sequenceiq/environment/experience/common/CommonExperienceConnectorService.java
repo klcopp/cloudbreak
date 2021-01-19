@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.sequenceiq.cloudbreak.auth.ThreadBasedUserCrnProvider;
 import com.sequenceiq.environment.experience.ResponseReader;
 import com.sequenceiq.environment.experience.RetriableWebTarget;
 import com.sequenceiq.environment.experience.api.CommonExperienceApi;
@@ -96,12 +97,11 @@ public class CommonExperienceConnectorService implements CommonExperienceApi {
     }
 
     private Invocation.Builder createCompleteCallableBuilder(WebTarget target) {
-        var crn = "crn:altus:iam:us-west-1:9d74eee4-1cad-45d7-b645-7ccf9edbb73d:user:4898cf22-7c43-418b-90d5-1b12a542150e";
         return target
                 .request()
                 .accept(APPLICATION_JSON)
                 .header(REQUEST_ID_HEADER, UUID.randomUUID().toString())
-                .header(CRN_HEADER, /*ThreadBasedUserCrnProvider.getUserCrn()*/ crn);
+                .header(CRN_HEADER, ThreadBasedUserCrnProvider.getUserCrn());
     }
 
     private WebTarget createWebTargetBasedOnInputs(String experienceBasePath, String environmentCrn) {
@@ -111,8 +111,7 @@ public class CommonExperienceConnectorService implements CommonExperienceApi {
 
     private String createPathToExperience(String experienceBasePath, String environmentCrn) {
         checkExperienceBasePath(experienceBasePath);
-        //String pathToExperience = experienceBasePath.replace(componentToReplaceInPath, environmentCrn);
-        return experienceBasePath.replace(componentToReplaceInPath, "crn:cdp:environments:us-west-1:9d74eee4-1cad-45d7-b645-7ccf9edbb73d:environment:c6778868-3b8c-4f67-a00f-4fa4c855ebcb");
+        return experienceBasePath.replace(componentToReplaceInPath, environmentCrn);
     }
 
     private void checkExperienceBasePath(String experienceBasePath) {
