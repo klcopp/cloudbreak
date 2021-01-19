@@ -47,6 +47,7 @@ import com.sequenceiq.cloudbreak.cloud.exception.CloudConnectorException;
 import com.sequenceiq.cloudbreak.cloud.model.CloudInstance;
 import com.sequenceiq.cloudbreak.cloud.model.CloudResource;
 import com.sequenceiq.cloudbreak.cloud.model.CloudStack;
+import com.sequenceiq.cloudbreak.cloud.model.CloudVolumeUsageType;
 import com.sequenceiq.cloudbreak.cloud.model.Group;
 import com.sequenceiq.cloudbreak.cloud.model.InstanceStatus;
 import com.sequenceiq.cloudbreak.cloud.model.InstanceTemplate;
@@ -327,7 +328,7 @@ class AwsVolumeResourceBuilderTest {
     }
 
     private Volume createVolume(String type) {
-        return new Volume(MOUNT_PREFIX + type, type, VOLUME_SIZE);
+        return new Volume(MOUNT_PREFIX + type, type, VOLUME_SIZE, CloudVolumeUsageType.GENERAL);
     }
 
     private Group createGroup(List<Volume> volumes, Map<String, Object> templateParameters) {
@@ -338,7 +339,7 @@ class AwsVolumeResourceBuilderTest {
     }
 
     private VolumeSetAttributes.Volume createVolumeForVolumeSet(String type) {
-        return new VolumeSetAttributes.Volume(null, null, VOLUME_SIZE, type);
+        return new VolumeSetAttributes.Volume(null, null, VOLUME_SIZE, type, CloudVolumeUsageType.GENERAL);
     }
 
     private CloudResource createVolumeSet(List<VolumeSetAttributes.Volume> volumes) {

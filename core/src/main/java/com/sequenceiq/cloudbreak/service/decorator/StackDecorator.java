@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -29,6 +30,7 @@ import com.sequenceiq.cloudbreak.cloud.model.Orchestrator;
 import com.sequenceiq.cloudbreak.cloud.model.Platform;
 import com.sequenceiq.cloudbreak.cloud.model.PlatformOrchestrators;
 import com.sequenceiq.cloudbreak.cloud.service.CloudParameterService;
+import com.sequenceiq.cloudbreak.common.exception.BadRequestException;
 import com.sequenceiq.cloudbreak.common.json.Json;
 import com.sequenceiq.cloudbreak.common.mappable.CloudPlatform;
 import com.sequenceiq.cloudbreak.common.user.CloudbreakUser;
@@ -37,10 +39,11 @@ import com.sequenceiq.cloudbreak.domain.FailurePolicy;
 import com.sequenceiq.cloudbreak.domain.Network;
 import com.sequenceiq.cloudbreak.domain.SecurityGroup;
 import com.sequenceiq.cloudbreak.domain.Template;
+import com.sequenceiq.cloudbreak.domain.VolumeTemplate;
+import com.sequenceiq.cloudbreak.domain.VolumeUsageType;
 import com.sequenceiq.cloudbreak.domain.stack.Stack;
 import com.sequenceiq.cloudbreak.domain.stack.instance.InstanceGroup;
 import com.sequenceiq.cloudbreak.dto.credential.Credential;
-import com.sequenceiq.cloudbreak.common.exception.BadRequestException;
 import com.sequenceiq.cloudbreak.service.CdpResourceTypeProvider;
 import com.sequenceiq.cloudbreak.service.environment.EnvironmentClientService;
 import com.sequenceiq.cloudbreak.service.environment.credential.CredentialConverter;
@@ -236,6 +239,15 @@ public class StackDecorator {
                     template = templateDecorator.decorate(credential, template, region, availabilityZone, subject.getPlatformVariant(),
                             cdpResourceType);
                     template.setWorkspace(subject.getWorkspace());
+                    if (instanceGroup.getInstanceGroupType() == InstanceGroupType.GATEWAY) {
+                        VolumeTemplate databaseVolumeTemplate = new VolumeTemplate();
+                        databaseVolumeTemplate.setUsageType(VolumeUsageType.DATABASE);
+                        databaseVolumeTemplate.setVolumeSize(50);
+                        databaseVolumeTemplate.setVolumeCount(1);
+                        databaseVolumeTemplate.setVolumeType("standard");
+                        databaseVolumeTemplate.setTemplate(template);
+                        template.getVolumeTemplates().add(databaseVolumeTemplate);
+                    }
                     template = templateService.create(user, template);
                     instanceGroup.setTemplate(template);
                 }
@@ -296,11 +308,13 @@ public class StackDecorator {
     }
 
     private void validateInstanceGroups(Stack stack) {
-        long instanceGroups = stack.getInstanceGroups().stream().filter(ig -> InstanceGroupType.GATEWAY.equals(ig.getInstanceGroupType())).count();
-        if (instanceGroups == 0L) {
+        Set<InstanceGroup> gatewayGroups= stack.getInstanceGroups().stream()
+                .filter(ig -> InstanceGroupType.GATEWAY.equals(ig.getInstanceGroupType()))
+                .collect(Collectors.toSet());
+        if (gatewayGroups.size() == 0L) {
             throw new BadRequestException("Gateway instance group not configured");
         }
-        if (instanceGroups > 1L) {
+        if (gatewayGroups.size() > 1L) {
             throw new BadRequestException("Multiple Gateway instance group configured, please use only one Gateway group");
         }
     }

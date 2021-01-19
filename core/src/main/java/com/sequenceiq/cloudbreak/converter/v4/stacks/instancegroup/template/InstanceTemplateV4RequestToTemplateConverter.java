@@ -29,6 +29,7 @@ import com.sequenceiq.cloudbreak.common.type.APIResourceType;
 import com.sequenceiq.cloudbreak.converter.AbstractConversionServiceAwareConverter;
 import com.sequenceiq.cloudbreak.domain.Template;
 import com.sequenceiq.cloudbreak.domain.VolumeTemplate;
+import com.sequenceiq.cloudbreak.domain.VolumeUsageType;
 import com.sequenceiq.cloudbreak.service.stack.DefaultRootVolumeSizeProvider;
 
 @Component
@@ -90,6 +91,7 @@ public class InstanceTemplateV4RequestToTemplateConverter extends AbstractConver
                 volumeTemplate.setVolumeCount(volumeCount == null ? Integer.valueOf(0) : volumeCount);
                 volumeTemplate.setVolumeType(volumeType == null ? "HDD" : volumeType);
                 volumeTemplate.setVolumeSize(volumeSize == null ? Integer.valueOf(0) : volumeSize);
+                volumeTemplate.setUsageType(VolumeUsageType.GENERAL);
                 volumeTemplate.setTemplate(template);
                 template.getVolumeTemplates().add(volumeTemplate);
             });
