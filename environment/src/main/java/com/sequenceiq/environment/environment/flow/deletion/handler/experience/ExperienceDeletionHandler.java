@@ -58,7 +58,7 @@ public class ExperienceDeletionHandler extends EventSenderAwareHandler<Environme
         EnvironmentDto envDto = environmentDeletionDtoEvent.getData().getEnvironmentDto();
 
         try {
-            if (entitlementService.isExperienceDeletionEnabled(envDto.getAccountId())) {
+            if (true) { // todo: revert this to the original logic
                 environmentService.findEnvironmentById(envDto.getId())
                         .ifPresent(this::deleteExperiences);
             }
@@ -100,6 +100,8 @@ public class ExperienceDeletionHandler extends EventSenderAwareHandler<Environme
                 ExperienceDeletionRetrievalTask.EXPERIENCE_RETRYING_COUNT,
                 SINGLE_FAILURE);
         if (!isSuccess(result.getLeft())) {
+            // todo: when no exception happens during the polling then the exception - in the result pair - will be null therefore we could have such a message in the env status like this: "Failed to delete Experience! null"
+            // todo: should we proceed then or throw this exception under this line?
             throw new ExperienceOperationFailedException("Failed to delete Experience! " + getIfNotNull(result.getRight(), Throwable::getMessage));
         }
     }
